@@ -13,6 +13,7 @@ typedef struct RedisConnCB{
 	int next;
 	int index;
 	redisContext* context;
+	RedisConnCBPool* pool;
 }RedisConnCB;
 
 /* pool of redis connection control blocks
@@ -20,16 +21,17 @@ typedef struct RedisConnCB{
 typedef struct RedisConnCBPool{
 	int size_total;
 	int idle_size;
-	int busy_size;
 	int idle_front;
+	int busy_size;
 	int busy_front;
 	pthread_mutex_t mutex;
+	int retry_times;
 	redisContext* cbs;
 }RedisConnCBPool;
 
 /* pool constructor
 */
-RedisConnCBPool* construct_pool(int size);
+RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times);
 
 /* pool destructor
 */

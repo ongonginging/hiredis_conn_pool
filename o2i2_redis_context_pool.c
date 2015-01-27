@@ -23,6 +23,7 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 	pool->busy_size = 0;
 	pool->idle_front = 0;
 	pool->busy_front = -1;
+	pool->retry_times = retry_times;
 	pthread_mutex_init(&pool->mutex, null);
 	pool->cbs = (RedisConnCB*)malloc(sizeof(RedisConnCB)*size);
 	if (!pool->cbs) {
@@ -39,6 +40,7 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 		cb->pre = (i-1+size)%size;
 		cb->next = (i+1)%size;
 		cb->index = i;
+		cb->pool = pool;
 		//TODO: retry here when connecting failed.
 		cb->context = redisConnectWithTimeout(host, port, timeout);
 	}
@@ -99,7 +101,7 @@ _return:
 }
 
 bool push_cb(RedisConnCBPool* pool, RedisConnCB* cb){
-	
+
 	bool rv = true;
 	pthread_mutex_lock(&pool->mutex);
 
