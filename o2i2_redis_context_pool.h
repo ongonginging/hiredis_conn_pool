@@ -19,12 +19,12 @@ typedef struct RedisConnCB{
 */
 typedef struct RedisConnCBPool{
 	int size_total;
-	int size_idle;
-	int size_busy;
+	int idle_size;
+	int busy_size;
 	int idle_front;
-	int idle_tail;
+	//int idle_tail;
 	int busy_front;
-	int busy_tail;
+	//int busy_tail;
 	pthread_mutex_t mutex;
 	redisContext* cbs;
 }RedisConnCBPool;
