@@ -99,40 +99,10 @@ _return:
 }
 
 bool push_cb(RedisConnCBPool* pool, RedisConnCB* cb){
-	pthread_mutex_lock(&pool->mutex);
+	
 	bool rv = true;
-	/*
-	if(pool->busy_front == -1){
-		//TODO:LOG ERROR, impossible
-		rv = false;
-		goto _return;
-	}else
-		if(pool->busy_front == pool->busy_tail){//only one cb in list
-			pool->busy_front = -1;
-			pool->busy_tail = -1;
-		}else{
-			pool->cbs[cb->pre]->next = cb->next;
-			pool->cbs[cb->next]->pre = cb->pre;
-			if (cb->index == pool->busy_front){
-				pool->busy_front = cb->next;
-			}else if (cb->index == pool->busy_tail){
-				pool->busy_tail = cb->pre;
-			}
-		}
-	}
-	if (pool->busy_tail == -1){
-		rv->pre = rv->index;
-		rv->next = rv->index;
-		pool->busy_front = rv->index;
-		pool->busy_tail = rv->index;
-	}else{
-		rv->pre = pool->busy_tail;
-		rv->next = pool->cbs[pool->busy_tail]->next;
-		pool->cbs[rv->pre]->next = rv->index;
-		pool->cbs[rv->next]->pre = rv->index;
-		pool->busy_tail = rv->index;
-	}
-	*/
+	pthread_mutex_lock(&pool->mutex);
+
 	if(pool->busy_front == -1){
 		//TODO:LOG ERROR, impossible
 		rv = false;
@@ -143,13 +113,20 @@ bool push_cb(RedisConnCBPool* pool, RedisConnCB* cb){
 		}else{
 			pool->cbs[cb->pre]->next = cb->next;
 			pool->cbs[cb->next]->pre = cb->pre;
-			if (cb->index == pool->busy_front){
-				pool->busy_front = cb->next;
-			}else if (cb->index == pool->busy_tail){
-				pool->busy_tail = cb->pre;
-			}
+			pool->busy_front = cb->next;
 		}
-	}	
+	}
+	if(pool->idle_front == -1){
+		cb->pre = cb->index;
+		cb->next = cb->index;
+	}else{
+		RedisConnCB* front = pool->cbs[pool->idle_front];
+		cb->pre = front->pre;
+		cb->next = front->index;
+		pool->cbs[cb->pre]->next = cb->index;
+		pool->cbs[cb->next]->pre = cb->index;
+	}
+	pool->idle_front = cb->index;
 	pool->idle_size++;
 	pool->busy_size--;
 

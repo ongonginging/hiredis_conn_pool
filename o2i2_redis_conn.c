@@ -9,7 +9,7 @@ RESULT redis_command(RedisConnCBPool* pool, redisReply** reply, char* cmd, ...){
 	RESULT rv = RESULT_SUCCESS;
 	redisContext * redis_context = NULL;
 	va_start(args, cmd);
-	redisCommand(redis_context, args);
+	*reply = (redisReply *)redisCommand(redis_context, args);
 	va_end(args);
 	return rv;
 }
