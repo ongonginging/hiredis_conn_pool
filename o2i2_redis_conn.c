@@ -45,7 +45,7 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 	if (null == reply){
 		//TODO: LOG ERROR, ""
 		bool conn_rv = connect(cb);
-		if(false == bool){
+		if(false == conn_rv){
 			//TODO: LOG ERROR, ""
 			rv = REDIS_RESULT_CONNECT_SERVER_FAILED;
 			goto _return;
