@@ -8,8 +8,8 @@ bool connect(RedisConnCB* cb){
 
 	bool rv = false;
 	RedisConnCBPool* pool = cb->pool;
-	int retry = pool->retry_times;
 	redisContext* context = cb->context;
+	int retry = pool->retry_times;
 
 	if (null != context) {
 		redisFree(context);
@@ -56,7 +56,7 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 	pool->busy_front = -1;
 	pool->retry_times = retry_times;
 	pool->port = port;
-	if (host != null || (strlen(host)<7 && strlen(host)>16)) {
+	if (null != host || (strlen(host)<7 && strlen(host)>16)) {
 		memcpy(pool->host, host, strlen(host));
 	}else{
 		free(pool);
@@ -93,7 +93,7 @@ bool destruct_pool(RedisConnCBPool* pool){
 	if (pool->cbs){
 		for(int i=0; i<pool->size; i++){
 			cb = pool->cbs + i;
-			if(cb->context) {
+			if(null != cb->context) {
 				redisFree(cb->context);
 			}
 		}
@@ -129,7 +129,8 @@ RedisConnCB* pop_cb(RedisConnCBPool* pool){
 		rv->next = front->index;
 		pool->cbs[rv->pre]->next = rv->index;
 		pool->cbs[rv->next]->pre = rv->index;
-	}
+	}	RedisConnCB* cb = null;
+
 	pool->busy_front = rv->index;
 	pool->idle_size--;
 	pool->busy_size++;
