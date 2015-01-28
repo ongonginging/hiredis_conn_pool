@@ -28,11 +28,17 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 	REDIS_RESULT rv = REDIS_RESULT_SUCCESS;
 	RedisConnCB* cb = pop_cb(pool);
 	if (null == cb){
-		return REDIS_RESULT_ERROR_POP_CONN_FAILED;
+		bool conn_rv = connect(cb);
+		if(!bool){
+			return REDIS_RESULT_CONNECT_SERVER_FAILED;
+		}
 	}
 	va_list args;
 	va_start(args, cmd);
 	*reply = (redisReply*)redisCommand(cb->context, args);
+	if (null == reply){
+		//TODO: LOG ERROR, ""
+	}
 	va_end(args);
 	bool push_rv = push_cb(pool, cb);
 	if (false == push_rv) {

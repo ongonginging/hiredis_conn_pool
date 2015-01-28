@@ -24,10 +24,10 @@ typedef struct RedisConnCBPool{
 	int idle_front;
 	int busy_size;
 	int busy_front;
-	pthread_mutex_t mutex;
 	int retry_times;
 	int port;
 	char host[16];
+	pthread_mutex_t mutex;
 	redisContext* cbs;
 }RedisConnCBPool;
 

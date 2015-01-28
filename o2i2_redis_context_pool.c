@@ -80,7 +80,7 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 		cb->index = i;
 		cb->pool = pool;
 		cb->context = null;
-		bool conn_ret = connect(cb);
+		connect(cb);
 	}
 
 	return pool;
@@ -129,7 +129,7 @@ RedisConnCB* pop_cb(RedisConnCBPool* pool){
 		rv->next = front->index;
 		pool->cbs[rv->pre]->next = rv->index;
 		pool->cbs[rv->next]->pre = rv->index;
-	}	RedisConnCB* cb = null;
+	}
 
 	pool->busy_front = rv->index;
 	pool->idle_size--;
