@@ -4,9 +4,40 @@
 #include "o2i2_types.h"
 #include "o2i2_redis_context_pool.h"
 
+bool connect(RedisConnCB* cb){
+
+	bool rv = false;
+	RedisConnCBPool* pool = cb->pool;
+	int retry = pool->retry_times;
+	redisContext* context = cb->context;
+
+	if (null != context) {
+		redisFree(context);
+		context = null;
+	}
+	while(0 != retry--){
+		context = redisConnectWithTimeout(pool->host, pool->port, pool->timeout);
+		if(null == context){
+			//TODO: LOG ERROR, "Connection error: \n"
+			continue;
+		}else{
+			if (context->err != null) {
+				//TODO: LOG ERROR, "Connection error: %s\n",cb->context->err
+				redisFree(context);
+				context = null;
+				continue;
+			}
+			rv = true;
+			break;
+		}
+	}
+    cb->context = context;
+	return rv;
+}
+
 RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times){
 
-	int size = redis_conn_poolsize;
+	int size = size;
 	if (size <= 0) {
 		//TODO: LOG
 		return null;
@@ -24,6 +55,13 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 	pool->idle_front = 0;
 	pool->busy_front = -1;
 	pool->retry_times = retry_times;
+	pool->port = port;
+	if (host != null || (strlen(host)<7 && strlen(host)>16)) {
+		memcpy(pool->host, host, strlen(host));
+	}else{
+		free(pool);
+		return null;
+	}
 	pthread_mutex_init(&pool->mutex, null);
 	pool->cbs = (RedisConnCB*)malloc(sizeof(RedisConnCB)*size);
 	if (!pool->cbs) {
@@ -41,9 +79,10 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 		cb->next = (i+1)%size;
 		cb->index = i;
 		cb->pool = pool;
-		//TODO: retry here when connecting failed.
-		cb->context = redisConnectWithTimeout(host, port, timeout);
+		cb->context = null;
+		bool conn_ret = connect(cb);
 	}
+
 	return pool;
 }
 
@@ -109,8 +148,7 @@ bool push_cb(RedisConnCBPool* pool, RedisConnCB* cb){
 		//TODO:LOG ERROR, impossible
 		rv = false;
 		goto _return;
-	}else
-		if(cb->pre == cb->next == cb->index){//only one cb in list
+	}else if(cb->pre == cb->next == cb->index){//only one cb in list
 			pool->busy_front = -1;
 		}else{
 			pool->cbs[cb->pre]->next = cb->next;

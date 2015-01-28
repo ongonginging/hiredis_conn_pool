@@ -10,16 +10,16 @@ REDIS_RESULT init_redis_pool(RedisConnCBPool** pool, int size, char* host, int p
 	REDIS_RESULT rv = REDIS_RESULT_SUCCESS;
 	*pool = construct_pool(size, host, port, timeout, retry_times);
 	if (null == pool){
-		rv = REDIS_RESULT_CONSTRUCT_POOL_FAILED;
+		return REDIS_RESULT_CONSTRUCT_POOL_FAILED;
 	}
 	return rv;
 }
 
 REDIS_RESULT deinit_redis_pool(RedisConnCBPool* pool){
 	REDIS_RESULT rv = REDIS_RESULT_SUCCESS;
-	bool destruct_ret = destruct_pool(pool);
-	if (false == desttruct_ret){
-		rv = REDIS_RESULT_DESTRUCT_POOL_FAILED;
+	bool destruct_rv = destruct_pool(pool);
+	if (false == destruct_rv){
+		return REDIS_RESULT_DESTRUCT_POOL_FAILED;
 	}
 	return rv;
 }
@@ -34,8 +34,8 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 	va_start(args, cmd);
 	*reply = (redisReply*)redisCommand(cb->context, args);
 	va_end(args);
-	bool push_result = push_cb(pool, cb);
-	if (false == push_result) {
+	bool push_rv = push_cb(pool, cb);
+	if (false == push_rv) {
 		return REDIS_RESULT_ERROR_PUSH_CONN_FAILED;
 	}
 	return rv;

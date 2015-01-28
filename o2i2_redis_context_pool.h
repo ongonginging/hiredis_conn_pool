@@ -26,8 +26,14 @@ typedef struct RedisConnCBPool{
 	int busy_front;
 	pthread_mutex_t mutex;
 	int retry_times;
+	int port;
+	char host[16];
 	redisContext* cbs;
 }RedisConnCBPool;
+
+/* connect redis server
+*/
+bool connect(RedisConnCB* cb);
 
 /* pool constructor
 */
