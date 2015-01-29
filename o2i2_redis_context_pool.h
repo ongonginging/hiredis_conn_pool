@@ -14,7 +14,7 @@ bool conn(RedisConnCB* cb);
 /* pool constructor
 */
 RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times, 
-	void (* logger)(REDIS_LOG_LEVEL level, char * format, ...));
+	void (* logger)(int level, char * format, ...));
 
 /* pool destructor
 */
