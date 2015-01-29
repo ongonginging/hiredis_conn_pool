@@ -17,6 +17,13 @@ typedef enum REDIS_RESULT{
 	REDIS_RESULT_CONNECT_SERVER_FAILED = 7,
 }REDIS_RESULT;
 
+typedef enum REDIS_LOG_LEVEL{
+	REDIS_LOG_LEVEL_DEBUG = 0,
+	REDIS_LOG_LEVEL_INFO = 1,
+	REDIS_LOG_LEVEL_WARNING = 2,
+	REDIS_LOG_LEVEL_ERROR = 3,
+}REDIS_LOG_LEVEL;
+
 /* redis connection control block
 */
 typedef struct RedisConnCB{
@@ -44,7 +51,9 @@ typedef struct RedisConnCBPool{
 	void (* logger)(int level, char * format, ...);
 }RedisConnCBPool;
 
-REDIS_RESULT init_redis_pool(RedisConnCBPool** pool, int size, char* host, int port, int timeout, int retry_times, void (* logger)(int level, char * format, ...));
+REDIS_RESULT init_redis_pool(RedisConnCBPool** pool, 
+	int size, char* host, int port, int timeout, int retry_times, 
+	void (* logger)(REDIS_LOG_LEVEL level, char * format, ...));
 REDIS_RESULT deinit_redis_pool(RedisConnCBPool* pool);
 REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* cmd, ...);
 

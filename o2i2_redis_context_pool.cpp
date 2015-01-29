@@ -40,7 +40,8 @@ bool conn(RedisConnCB* cb){
 	return rv;
 }
 
-RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times, void (* logger)(int level, char * format, ...)){
+RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times, 
+	void (* logger)(REDIS_LOG_LEVEL level, char * format, ...)){
 
 	if (size <= 0) {
 		//TODO: LOG
