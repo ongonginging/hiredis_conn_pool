@@ -5,33 +5,7 @@
 #include <pthread.h>
 #include "hiredis.h"
 #include "o2i2_types.h"
-
-/* redis connection control block
-*/
-typedef struct RedisConnCB{
-	int pre;
-	int next;
-	int index;
-	redisContext* context;
-	struct RedisConnCBPool* pool;
-}RedisConnCB;
-
-/* pool of redis connection control blocks
-*/
-typedef struct RedisConnCBPool{
-	int size_total;
-	int idle_size;
-	int idle_front;
-	int busy_size;
-	int busy_front;
-	int retry_times;
-	int timeout;
-	int port;
-	char host[16];
-	pthread_mutex_t mutex;
-	struct RedisConnCB* cbs;
-}RedisConnCBPool;
-
+#include "o2i2_redis_conn.h"
 /* connect redis server
 */
 bool connect(RedisConnCB* cb);

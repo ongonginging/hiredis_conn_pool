@@ -16,7 +16,32 @@ typedef enum {
 	REDIS_RESULT_CONNECT_SERVER_FAILED = 7,
 }REDIS_RESULT;
 
-typedef RedisConnCBPool RedisConnCBPool;
+/* redis connection control block
+*/
+typedef struct RedisConnCB{
+	int pre;
+	int next;
+	int index;
+	redisContext* context;
+	struct RedisConnCBPool* pool;
+}RedisConnCB;
+
+/* pool of redis connection control blocks
+*/
+typedef struct RedisConnCBPool{
+	int size_total;
+	int idle_size;
+	int idle_front;
+	int busy_size;
+	int busy_front;
+	int retry_times;
+	int timeout;
+	int port;
+	char host[16];
+	pthread_mutex_t mutex;
+	struct RedisConnCB* cbs;
+}RedisConnCBPool;
+
 
 REDIS_RESULT init_redis_pool(RedisConnCBPool** pool, int size, char* host, int port, int timeout, int retry_times);
 REDIS_RESULT deinit_redis_pool(RedisConnCBPool* pool);
