@@ -9,11 +9,11 @@
 
 /* connect redis server
 */
-bool connect(RedisConnCB* cb);
+bool conn(RedisConnCB* cb);
 
 /* pool constructor
 */
-RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times);
+RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times, void (* logger)(int level, char * format, ...));
 
 /* pool destructor
 */

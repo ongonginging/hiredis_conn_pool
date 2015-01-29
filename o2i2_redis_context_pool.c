@@ -7,7 +7,7 @@
 #include "o2i2_redis_conn.h"
 #include "o2i2_redis_context_pool.h"
 
-bool connect(RedisConnCB* cb){
+bool conn(RedisConnCB* cb){
 
 	bool rv = false;
 	RedisConnCBPool* pool = cb->pool;
@@ -40,7 +40,7 @@ bool connect(RedisConnCB* cb){
 	return rv;
 }
 
-RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times){
+RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times, void (* logger)(int level, char * format, ...)){
 
 	if (size <= 0) {
 		//TODO: LOG
@@ -60,6 +60,7 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 	pool->busy_front = -1;
 	pool->retry_times = retry_times;
 	pool->port = port;
+	pool->logger = logger;
 	if (null != host || (strlen(host)<7 && strlen(host)>16)) {
 		memcpy(pool->host, host, strlen(host));
 	}else{
@@ -84,7 +85,7 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 		cb->index = i;
 		cb->pool = pool;
 		cb->context = null;
-		connect(cb);
+		conn(cb);
 	}
 
 	return pool;
