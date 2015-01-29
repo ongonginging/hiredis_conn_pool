@@ -3,7 +3,6 @@
 #define _O2I2_REDIS_CONN_H_
 
 #include "o2i2_types.h"
-#include "o2i2_redis_context_pool.h"
 
 typedef enum {
 	REDIS_RESULT_SUCCESS = 0,
@@ -41,7 +40,6 @@ typedef struct RedisConnCBPool{
 	pthread_mutex_t mutex;
 	struct RedisConnCB* cbs;
 }RedisConnCBPool;
-
 
 REDIS_RESULT init_redis_pool(RedisConnCBPool** pool, int size, char* host, int port, int timeout, int retry_times);
 REDIS_RESULT deinit_redis_pool(RedisConnCBPool* pool);
