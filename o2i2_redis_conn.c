@@ -40,7 +40,7 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 	}
 	va_list args;
 	va_start(args, cmd);
-	*reply = (redisReply*)redisCommand(cb->context, args);
+	*reply = (redisReply*)redisvCommand(cb->context, cmd, args);
 	if (null == *reply){
 		//TODO: LOG ERROR, ""
 		bool conn_rv = connect(cb);
@@ -49,7 +49,7 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 			rv = REDIS_RESULT_CONNECT_SERVER_FAILED;
 			goto _return;
 		}
-		*reply = (redisReply*)redisCommand(cb->context, args);
+		*reply = (redisReply*)redisvCommand(cb->context, cmd, args);
 	}
 	va_end(args);
 
