@@ -2,9 +2,11 @@
 #ifndef _O2I2_REDIS_CONN_H_
 #define _O2I2_REDIS_CONN_H_
 
+#include <pthread.h>
+#include "hiredis.h"
 #include "o2i2_types.h"
 
-typedef enum {
+typedef enum REDIS_RESULT{
 	REDIS_RESULT_SUCCESS = 0,
 	REDIS_RESULT_ERROR_UNKNOWN = 1,
 	REDIS_RESULT_ERROR_NULL_POINTER = 2,
