@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "hiredis.h"
-#include "o2i2_types.h"
+//#include "o2i2_types.h"
 #include "o2i2_redis_conn.h"
 #include "o2i2_redis_context_pool.h"
 
@@ -14,22 +14,22 @@ bool conn(RedisConnCB* cb){
 	redisContext* context = cb->context;
 	int retry = pool->retry_times;
 
-	if (null != context) {
+	if (NULL != context) {
 		redisFree(context);
-		context = null;
+		context = NULL;
 	}
 
 	struct timeval timeout = {0, pool->timeout};
 	while(0 != retry--){
 		context = redisConnectWithTimeout(pool->host, pool->port, timeout);
-		if(null == context){
+		if(NULL == context){
 			//TODO: LOG ERROR, "Connection error: \n"
 			continue;
 		}else{
-			if (null != context->err) {
+			if (0 != context->err) {
 				//TODO: LOG ERROR, "Connection error: %s\n",cb->context->err
 				redisFree(context);
-				context = null;
+				context = NULL;
 				continue;
 			}
 			rv = true;
@@ -44,12 +44,12 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 
 	if (size <= 0) {
 		//TODO: LOG
-		return null;
+		return NULL;
 	}
 	RedisConnCBPool* pool = (RedisConnCBPool*)malloc(sizeof(RedisConnCBPool));
 	if (!pool) {
 		//TODO: LOG
-		return null;
+		return NULL;
 	}
 	memset((void*)pool, 0, sizeof(RedisConnCBPool));
 
@@ -61,30 +61,30 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 	pool->retry_times = retry_times;
 	pool->port = port;
 	pool->logger = logger;
-	if (null != host || (strlen(host)<7 && strlen(host)>16)) {
+	if (NULL != host || (strlen(host)<7 && strlen(host)>16)) {
 		memcpy(pool->host, host, strlen(host));
 	}else{
 		free(pool);
-		return null;
+		return NULL;
 	}
-	pthread_mutex_init(&pool->mutex, null);
+	pthread_mutex_init(&pool->mutex, NULL);
 	pool->cbs = (RedisConnCB*)malloc(sizeof(RedisConnCB)*size);
 	if (!pool->cbs) {
 		//TODO: LOG
 		free(pool);
-		return null;
+		return NULL;
 	}
 	memset((void*)pool->cbs, 0, sizeof(RedisConnCB)*size);
 
 	int i;
-	RedisConnCB* cb = null;
+	RedisConnCB* cb = NULL;
 	for(i=0; i<size; i++){
 		cb = pool->cbs + i;
 		cb->pre = (i-1+size)%size;
 		cb->next = (i+1)%size;
 		cb->index = i;
 		cb->pool = pool;
-		cb->context = null;
+		cb->context = NULL;
 		conn(cb);
 	}
 
@@ -94,11 +94,11 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 bool destruct_pool(RedisConnCBPool* pool){
 	//TODO:unlock
 	int i = 0;
-	RedisConnCB* cb = null;
+	RedisConnCB* cb = NULL;
 	if (pool->cbs){
 		for(i=0; i<pool->size_total; i++){
 			cb = pool->cbs + i;
-			if(null != cb->context) {
+			if(NULL != cb->context) {
 				redisFree(cb->context);
 			}
 		}
@@ -109,7 +109,7 @@ bool destruct_pool(RedisConnCBPool* pool){
 
 RedisConnCB* pop_cb(RedisConnCBPool* pool){
 
-	RedisConnCB* rv = null;
+	RedisConnCB* rv = NULL;
 	pthread_mutex_lock(&pool->mutex);
 
 	if(pool->idle_front == -1){

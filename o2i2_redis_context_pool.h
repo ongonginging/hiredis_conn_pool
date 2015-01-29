@@ -4,7 +4,7 @@
 
 #include <pthread.h>
 #include "hiredis.h"
-#include "o2i2_types.h"
+//#include "o2i2_types.h"
 #include "o2i2_redis_conn.h"
 
 /* connect redis server

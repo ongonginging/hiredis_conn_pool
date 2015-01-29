@@ -12,8 +12,8 @@
 #endif
 #define false 0
 
-#ifdef null
-#undef null
+#ifdef NULL
+#undef NULL
 #endif
 #define null 0
 
