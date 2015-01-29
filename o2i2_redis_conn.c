@@ -3,7 +3,6 @@
 #include "hiredis.h"
 #include "o2i2_types.h"
 #include "o2i2_redis_conn.h"
-#include "o2i2_redis_conn_manager.h"
 #include "o2i2_redis_context_pool.h"
 
 REDIS_RESULT init_redis_pool(RedisConnCBPool** pool, int size, char* host, int port, int timeout, int retry_times){
@@ -42,7 +41,7 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 	va_list args;
 	va_start(args, cmd);
 	*reply = (redisReply*)redisCommand(cb->context, args);
-	if (null == reply){
+	if (null == *reply){
 		//TODO: LOG ERROR, ""
 		bool conn_rv = connect(cb);
 		if(false == conn_rv){
@@ -54,11 +53,12 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 	}
 	va_end(args);
 
+	bool push_rv = false;
 _return:
-	bool push_rv = push_cb(pool, cb);
+	push_rv = push_cb(pool, cb);
 	if (false == push_rv) {
 		//TODO: LOG ERROR, ""
-		return REDIS_RESULT_ERROR_PUSH_CONN_FAILED;
+		rv = REDIS_RESULT_ERROR_PUSH_CONN_FAILED;
 	}
 	return rv;
 }

@@ -2,11 +2,6 @@
 #ifndef _O2I2_TYPES_H_
 #define _O2I2_TYPES_H_
 
-#ifdef bool
-#undef bool
-#endif
-#define bool int
-
 #ifdef true
 #undef true
 #endif
@@ -21,5 +16,10 @@
 #undef null
 #endif
 #define null 0
+
+#ifdef bool
+#undef bool
+#endif
+#define bool int
 
 #endif //_O2I2_TYPES_H_

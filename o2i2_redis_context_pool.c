@@ -1,4 +1,6 @@
 
+#include <string.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include "hiredis.h"
 #include "o2i2_types.h"
@@ -15,13 +17,15 @@ bool connect(RedisConnCB* cb){
 		redisFree(context);
 		context = null;
 	}
+
+	struct timeval timeout = {0, pool->timeout};
 	while(0 != retry--){
-		context = redisConnectWithTimeout(pool->host, pool->port, pool->timeout);
+		context = redisConnectWithTimeout(pool->host, pool->port, timeout);
 		if(null == context){
 			//TODO: LOG ERROR, "Connection error: \n"
 			continue;
 		}else{
-			if (context->err != null) {
+			if (null != context->err) {
 				//TODO: LOG ERROR, "Connection error: %s\n",cb->context->err
 				redisFree(context);
 				context = null;
@@ -37,7 +41,6 @@ bool connect(RedisConnCB* cb){
 
 RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times){
 
-	int size = size;
 	if (size <= 0) {
 		//TODO: LOG
 		return null;
@@ -71,9 +74,9 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 	}
 	memset((void*)pool->cbs, 0, sizeof(RedisConnCB)*size);
 
-	//int i = 0;
+	int i;
 	RedisConnCB* cb = null;
-	for(int i=0; i<size; i++){
+	for(i=0; i<size; i++){
 		cb = pool->cbs + i;
 		cb->pre = (i-1+size)%size;
 		cb->next = (i+1)%size;
@@ -88,10 +91,10 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 
 bool destruct_pool(RedisConnCBPool* pool){
 	//TODO:unlock
-	//int i = 0;
+	int i = 0;
 	RedisConnCB* cb = null;
 	if (pool->cbs){
-		for(int i=0; i<pool->size; i++){
+		for(i=0; i<pool->size_total; i++){
 			cb = pool->cbs + i;
 			if(null != cb->context) {
 				redisFree(cb->context);
@@ -111,12 +114,12 @@ RedisConnCB* pop_cb(RedisConnCBPool* pool){
 		//TODO:LOG ERROR, no idle connection
 		goto _return;
 	}else{
-		rv = pool->cbs[pool->idle_front];
+		rv = pool->cbs + pool->idle_front;
 		if(rv->pre == rv->next == rv->index){
 			pool->idle_front = -1;
 		}else{
-			pool->cbs[rv->pre]->next = rv->next;
-			pool->cbs[rv->next]->pre = rv->pre;
+			(pool->cbs + rv->pre)->next = rv->next;
+			(pool->cbs + rv->next)->pre = rv->pre;
 			pool->idle_front = rv->next;
 		}
 	}
@@ -124,11 +127,11 @@ RedisConnCB* pop_cb(RedisConnCBPool* pool){
 		rv->pre = rv->index;
 		rv->next = rv->index;
 	}else{
-		RedisConnCB* front = pool->cbs[pool->busy_front];
+		RedisConnCB* front = pool->cbs + pool->busy_front;
 		rv->pre = front->pre;
 		rv->next = front->index;
-		pool->cbs[rv->pre]->next = rv->index;
-		pool->cbs[rv->next]->pre = rv->index;
+		(pool->cbs + rv->pre)->next = rv->index;
+		(pool->cbs + rv->next)->pre = rv->index;
 	}
 
 	pool->busy_front = rv->index;
@@ -149,23 +152,24 @@ bool push_cb(RedisConnCBPool* pool, RedisConnCB* cb){
 		//TODO:LOG ERROR, impossible
 		rv = false;
 		goto _return;
-	}else if(cb->pre == cb->next == cb->index){//only one cb in list
+	}else{
+		if(cb->pre == cb->next == cb->index){//only one cb in list
 			pool->busy_front = -1;
 		}else{
-			pool->cbs[cb->pre]->next = cb->next;
-			pool->cbs[cb->next]->pre = cb->pre;
+			(pool->cbs + cb->pre)->next = cb->next;
+			(pool->cbs + cb->next)->pre = cb->pre;
 			pool->busy_front = cb->next;
 		}
 	}
-	if(pool->idle_front == -1){
+	if (pool->idle_front == -1){
 		cb->pre = cb->index;
 		cb->next = cb->index;
 	}else{
-		RedisConnCB* front = pool->cbs[pool->idle_front];
+		RedisConnCB* front = pool->cbs + pool->idle_front;
 		cb->pre = front->pre;
 		cb->next = front->index;
-		pool->cbs[cb->pre]->next = cb->index;
-		pool->cbs[cb->next]->pre = cb->index;
+		(pool->cbs + cb->pre)->next = cb->index;
+		(pool->cbs + cb->next)->pre = cb->index;
 	}
 	pool->idle_front = cb->index;
 	pool->idle_size++;
