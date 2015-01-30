@@ -52,7 +52,7 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 	va_start(args, cmd);
 	*reply = (redisReply*)redisvCommand(cb->context, cmd, args);
 	if (NULL == *reply){
-		//TODO: LOG ERROR, ""
+		pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do redis command failed.", __FILE__, __LINE__, __func__);
 		bool conn_rv = conn(cb);
 		if(false == conn_rv){
 			pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do conn failed.", __FILE__, __LINE__, __func__);

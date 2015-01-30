@@ -93,7 +93,6 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 }
 
 bool destruct_pool(RedisConnCBPool* pool){
-	//TODO:unlock
 	int i = 0;
 	RedisConnCB* cb = NULL;
 	if (pool->cbs){
