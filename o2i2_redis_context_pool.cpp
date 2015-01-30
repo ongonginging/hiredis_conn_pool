@@ -27,7 +27,7 @@ bool conn(RedisConnCB* cb){
 			continue;
 		}else{
 			if (0 != context->err) {
-				pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] %s", __FILE__, __LINE__, __func__, context->err;
+				pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] %s", __FILE__, __LINE__, __func__, context->err);
 				redisFree(context);
 				context = NULL;
 				continue;
