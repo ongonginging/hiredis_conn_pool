@@ -41,7 +41,7 @@ bool conn(RedisConnCB* cb){
 }
 
 RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int retry_times, 
-	void (* logger)(REDIS_LOG_LEVEL level, char * format, ...)){
+	void (* logger)(REDIS_LOG_LEVEL level, const char * format, ...)){
 
 	if (size <= 0) {
 		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] pool size <= 0.", __FILE__, __LINE__, __func__);

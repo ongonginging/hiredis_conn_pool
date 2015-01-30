@@ -7,7 +7,7 @@
 
 REDIS_RESULT init_redis_pool(RedisConnCBPool** pool, 
 	int size, char* host, int port, int timeout, int retry_times, 
-	void (* logger)(REDIS_LOG_LEVEL level, char * format, ...)){
+	void (* logger)(REDIS_LOG_LEVEL level, const char * format, ...)){
 	REDIS_RESULT rv = REDIS_RESULT_SUCCESS;
 	*pool = construct_pool(size, host, port, timeout, retry_times, logger);
 	if (NULL == pool){
@@ -21,7 +21,7 @@ REDIS_RESULT deinit_redis_pool(RedisConnCBPool* pool){
 	REDIS_RESULT rv = REDIS_RESULT_SUCCESS;
 	bool destruct_rv = destruct_pool(pool);
 	if (false == destruct_rv){
-		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do destruct_pool failed.", __FILE__, __LINE__, __func__);
+		pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do destruct_pool failed.", __FILE__, __LINE__, __func__);
 		return REDIS_RESULT_DESTRUCT_POOL_FAILED;
 	}
 	return rv;
