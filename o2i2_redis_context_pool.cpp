@@ -23,11 +23,11 @@ bool conn(RedisConnCB* cb){
 	while(0 != retry--){
 		context = redisConnectWithTimeout(pool->host, pool->port, timeout);
 		if(NULL == context){
-			pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Connecting timeout.", __file__, __line__, __func__);
+			pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Connecting timeout.", __FILE__, __LINE__, __FUNC__);
 			continue;
 		}else{
 			if (0 != context->err) {
-				pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] %s", __file__, __line__, __func__, context->err);
+				pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] %s", __FILE__, __LINE__, __FUNC__, context->err;
 				redisFree(context);
 				context = NULL;
 				continue;
@@ -44,12 +44,12 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 	void (* logger)(REDIS_LOG_LEVEL level, char * format, ...)){
 
 	if (size <= 0) {
-		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] pool size <= 0.", __file__, __line__, __func__);
+		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] pool size <= 0.", __FILE__, __LINE__, __FUNC__);
 		return NULL;
 	}
 	RedisConnCBPool* pool = (RedisConnCBPool*)malloc(sizeof(RedisConnCBPool));
 	if (!pool) {
-		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Failed to allocate memory for pool.", __file__, __line__, __func__);
+		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Failed to allocate memory for pool.", __FILE__, __LINE__, __FUNC__);
 		return NULL;
 	}
 	memset((void*)pool, 0, sizeof(RedisConnCBPool));
@@ -71,7 +71,7 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 	pthread_mutex_init(&pool->mutex, NULL);
 	pool->cbs = (RedisConnCB*)malloc(sizeof(RedisConnCB)*size);
 	if (!pool->cbs) {
-		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Failed to allocate memory for pool->cbs.", __file__, __line__, __func__);
+		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Failed to allocate memory for pool->cbs.", __FILE__, __LINE__, __FUNC__);
 		free(pool);
 		return NULL;
 	}
@@ -114,7 +114,7 @@ RedisConnCB* pop_cb(RedisConnCBPool* pool){
 	pthread_mutex_lock(&pool->mutex);
 
 	if (-1 == pool->idle_front){
-		pool->logger(REDIS_LOG_LEVEL_WARNING, "[hiredis_conn_pool|%s|%d|%s] No Idle connection.", __file__, __line__, __func__);
+		pool->logger(REDIS_LOG_LEVEL_WARNING, "[hiredis_conn_pool|%s|%d|%s] No Idle connection.", __FILE__, __LINE__, __FUNC__);
 		goto _return;
 	}else{
 		rv = pool->cbs + pool->idle_front;
@@ -152,7 +152,7 @@ bool push_cb(RedisConnCBPool* pool, RedisConnCB* cb){
 	pthread_mutex_lock(&pool->mutex);
 
 	if (-1 == pool->busy_front){
-		pool->logger(REDIS_LOG_LEVEL_WARNING, "[hiredis_conn_pool|%s|%d|%s] Impossible.", __file__, __line__, __func__);
+		pool->logger(REDIS_LOG_LEVEL_WARNING, "[hiredis_conn_pool|%s|%d|%s] Impossible.", __FILE__, __LINE__, __FUNC__);
 		rv = false;
 		goto _return;
 	}else{
