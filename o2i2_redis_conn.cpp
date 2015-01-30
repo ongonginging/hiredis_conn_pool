@@ -11,7 +11,7 @@ REDIS_RESULT init_redis_pool(RedisConnCBPool** pool,
 	REDIS_RESULT rv = REDIS_RESULT_SUCCESS;
 	*pool = construct_pool(size, host, port, timeout, retry_times, logger);
 	if (NULL == pool){
-		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do construct_pool failed.", __FILE__, __LINE__, __FUNC__);
+		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do construct_pool failed.", __FILE__, __LINE__, __func__);
 		return REDIS_RESULT_CONSTRUCT_POOL_FAILED;
 	}
 	return rv;
@@ -21,7 +21,7 @@ REDIS_RESULT deinit_redis_pool(RedisConnCBPool* pool){
 	REDIS_RESULT rv = REDIS_RESULT_SUCCESS;
 	bool destruct_rv = destruct_pool(pool);
 	if (false == destruct_rv){
-		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do destruct_pool failed.", __FILE__, __LINE__, __FUNC__);
+		logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do destruct_pool failed.", __FILE__, __LINE__, __func__);
 		return REDIS_RESULT_DESTRUCT_POOL_FAILED;
 	}
 	return rv;
@@ -37,12 +37,12 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 	if (NULL == cb->context){
 		bool conn_rv = conn(cb);
 		if(false == conn_rv){
-			pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do conn failed.", __FILE__, __LINE__, __FUNC__);
+			pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do conn failed.", __FILE__, __LINE__, __func__);
 			rv = REDIS_RESULT_CONNECT_SERVER_FAILED;
 			bool push_rv = false;
 			push_rv = push_cb(pool, cb);
 			if (false == push_rv) {
-				pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do push_cb failed.", __FILE__, __LINE__, __FUNC__);
+				pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do push_cb failed.", __FILE__, __LINE__, __func__);
 				rv = REDIS_RESULT_ERROR_PUSH_CONN_FAILED;
 			}
 			return rv;
@@ -55,11 +55,11 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 		//TODO: LOG ERROR, ""
 		bool conn_rv = conn(cb);
 		if(false == conn_rv){
-			pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do conn failed.", __FILE__, __LINE__, __FUNC__);
+			pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do conn failed.", __FILE__, __LINE__, __func__);
 			rv = REDIS_RESULT_CONNECT_SERVER_FAILED;
 			bool push_rv = push_cb(pool, cb);
 			if (false == push_rv) {
-				pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do push_cb failed.", __FILE__, __LINE__, __FUNC__);
+				pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do push_cb failed.", __FILE__, __LINE__, __func__);
 				rv = REDIS_RESULT_ERROR_PUSH_CONN_FAILED;
 			}
 			return rv;
@@ -71,7 +71,7 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* c
 	bool push_rv = false;
 	push_rv = push_cb(pool, cb);
 	if (false == push_rv) {
-		pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do push_cb failed.", __FILE__, __LINE__, __FUNC__);
+		pool->logger(REDIS_LOG_LEVEL_ERROR, "[hiredis_conn_pool|%s|%d|%s] Do push_cb failed.", __FILE__, __LINE__, __func__);
 		rv = REDIS_RESULT_ERROR_PUSH_CONN_FAILED;
 	}
 	return rv;
