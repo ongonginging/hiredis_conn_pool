@@ -48,7 +48,7 @@ typedef struct RedisConnCBPool{
 	char host[16];
 	pthread_mutex_t mutex;
 	struct RedisConnCB* cbs;
-	void (* logger)(REDIS_LOG_LEVEL level, char * format, ...);
+	void (* logger)(REDIS_LOG_LEVEL level, const char * format, ...);
 }RedisConnCBPool;
 
 REDIS_RESULT init_redis_pool(RedisConnCBPool** pool, 
