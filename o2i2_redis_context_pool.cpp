@@ -107,6 +107,27 @@ bool destruct_pool(RedisConnCBPool* pool){
 	free(pool);
 }
 
+void log_pool(RedisConnCBPool* pool){
+	pool->logger(REDIS_LOG_LEVEL_WARNING, "\n\n[hiredis_conn_pool|%s|%d|%s]Idle connection total number: %d\n\n.", __FILE__, __LINE__, __func__, pool->idle_size);
+	int tmp = -1;
+	while(tmp != pool->idle_front){
+		if (-1 == tmp){
+			tmp = pool->idle_front;
+		}
+		pool->logger(REDIS_LOG_LEVEL_WARNING, "[hiredis_conn_pool|%s|%d|%s]Idle connection id: %d\n.", __FILE__, __LINE__, __func__, tmp);
+		tmp = pool->cbs[tmp].next;
+	}
+	pool->logger(REDIS_LOG_LEVEL_WARNING, "\n\n[hiredis_conn_pool|%s|%d|%s]Busy connections total number: %d\n\n.", __FILE__, __LINE__, __func__, pool->busy_size);
+	tmp = -1;
+	while(tmp != pool->busy_front){
+		if (-1 == tmp){
+			tmp = pool->busy_front;
+		}
+		pool->logger(REDIS_LOG_LEVEL_WARNING, "[hiredis_conn_pool|%s|%d|%s]Busy connection id: %d\n.", __FILE__, __LINE__, __func__, tmp);
+		tmp = pool->cbs[tmp].next;
+	}
+}
+
 RedisConnCB* pop_cb(RedisConnCBPool* pool){
 
 	RedisConnCB* rv = NULL;

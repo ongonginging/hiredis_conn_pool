@@ -5,7 +5,7 @@
 #include "o2i2_redis_conn.h"
 #include "o2i2_redis_context_pool.h"
 
-REDIS_RESULT init_redis_pool(RedisConnCBPool** pool, 
+REDIS_RESULT initialize_redis_pool(RedisConnCBPool** pool, 
 	int size, char* host, int port, int timeout, int retry_times, 
 	void (* logger)(REDIS_LOG_LEVEL level, const char * format, ...)){
 	REDIS_RESULT rv = REDIS_RESULT_SUCCESS;
@@ -17,7 +17,7 @@ REDIS_RESULT init_redis_pool(RedisConnCBPool** pool,
 	return rv;
 }
 
-REDIS_RESULT deinit_redis_pool(RedisConnCBPool* pool){
+REDIS_RESULT shutdown_redis_pool(RedisConnCBPool* pool){
 	REDIS_RESULT rv = REDIS_RESULT_SUCCESS;
 	bool destruct_rv = destruct_pool(pool);
 	if (false == destruct_rv){

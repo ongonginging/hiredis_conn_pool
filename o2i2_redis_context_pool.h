@@ -20,6 +20,10 @@ RedisConnCBPool* construct_pool(int size, char* host, int port, int timeout, int
 */
 bool destruct_pool(RedisConnCBPool* pool);
 
+/* debug
+*/
+void log_pool(RedisConnCBPool* pool);
+
 /* get a control block from pool
 */
 RedisConnCB* pop_cb(RedisConnCBPool* pool);
