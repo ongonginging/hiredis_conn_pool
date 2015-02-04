@@ -2,8 +2,8 @@
 #include <stdarg.h>
 #include "hiredis.h"
 //#include "o2i2_types.h"
-#include "o2i2_redis_conn.h"
-#include "o2i2_redis_context_pool.h"
+#include "hiredis_conn_pool.h"
+#include "hiredis_context_pool.h"
 
 REDIS_RESULT initialize_redis_pool(RedisConnCBPool** pool, 
 	int size, const char* host, int port, int timeout, int retry_times, 

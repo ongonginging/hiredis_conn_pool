@@ -4,24 +4,24 @@
 
 //#include "o2i2_types.h"
 #include "hiredis.h"
-#include "o2i2_redis_conn.h"
-#include "o2i2_redis_context_pool.h"
+#include "hiredis_conn_pool.h"
+#include "hiredis_context_pool.h"
 
 void logger(REDIS_LOG_LEVEL level, const char* cmd, ...){
     va_list args;
     va_start(args, cmd);
-    vprintf(cmd, args); 
+    vprintf(cmd, args);
     va_end(args);
 }
 
 int main(int argc, char const *argv[])
 {
     /* code */
-    RedisConnCBPool* pool; 
+    RedisConnCBPool* pool;
     REDIS_RESULT rv_redis = REDIS_RESULT_SUCCESS;
     rv_redis = initialize_redis_pool(&pool, 5, "127.0.0.1", 6379, 10000, 3, logger);
     if (REDIS_RESULT_SUCCESS != rv_redis){
-        logger(REDIS_LOG_LEVEL_DEBUG, "Failed to create redis connetion pool."); 
+        logger(REDIS_LOG_LEVEL_DEBUG, "Failed to create redis connetion pool.");
     }
 
     log_pool(pool);

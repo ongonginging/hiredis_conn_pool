@@ -1,6 +1,6 @@
 
-#ifndef _O2I2_REDIS_CONN_H_
-#define _O2I2_REDIS_CONN_H_
+#ifndef _HIREDIS_CONN_POOL_H_
+#define _HIREDIS_CONN_POOL_H_
 
 #include <pthread.h>
 #include "hiredis.h"
@@ -57,4 +57,4 @@ REDIS_RESULT initialize_redis_pool(RedisConnCBPool** pool,
 REDIS_RESULT shutdown_redis_pool(RedisConnCBPool* pool);
 REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, const char* cmd, ...);
 
-#endif //_O2I2_REDIS_CONN_H_
+#endif //_HIREDIS_CONN_POOL_H_

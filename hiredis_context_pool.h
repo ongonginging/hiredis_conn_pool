@@ -1,11 +1,11 @@
 
-#ifndef _O2I2_REDIS_CONTEXT_POOL_H_
-#define _O2I2_REDIS_CONTEXT_POOL_H_
+#ifndef _HIREDIS_CONTEXT_POOL_H_
+#define _HIREDIS_CONTEXT_POOL_H_
 
 #include <pthread.h>
 #include "hiredis.h"
 //#include "o2i2_types.h"
-#include "o2i2_redis_conn.h"
+#include "hiredis_conn_pool.h"
 
 /* connect redis server
 */
@@ -13,7 +13,7 @@ bool conn(RedisConnCB* cb);
 
 /* pool constructor
 */
-RedisConnCBPool* construct_pool(int size, const char* host, int port, int timeout, int retry_times, 
+RedisConnCBPool* construct_pool(int size, const char* host, int port, int timeout, int retry_times,
 	void (* logger)(REDIS_LOG_LEVEL level, const char * format, ...));
 
 /* pool destructor
@@ -32,4 +32,4 @@ RedisConnCB* pop_cb(RedisConnCBPool* pool);
 */
 bool push_cb(RedisConnCBPool* pool, RedisConnCB* cb);
 
-#endif //_O2I2_REDIS_CONTEXT_POOL_H_
+#endif //_HIREDIS_CONTEXT_POOL_H_

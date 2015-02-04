@@ -4,8 +4,8 @@
 #include <pthread.h>
 #include "hiredis.h"
 //#include "o2i2_types.h"
-#include "o2i2_redis_conn.h"
-#include "o2i2_redis_context_pool.h"
+#include "hiredis_conn_pool.h"
+#include "hiredis_context_pool.h"
 
 bool conn(RedisConnCB* cb){
 
