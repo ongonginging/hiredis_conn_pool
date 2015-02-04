@@ -1,6 +1,6 @@
 
-#include <pthread.h>  
-#include <stdio.h>  
+#include <pthread.h> 
+#include <stdio.h> 
 
 //#include "o2i2_types.h"
 #include "hiredis.h"
@@ -21,18 +21,31 @@ int main(int argc, char const *argv[])
     REDIS_RESULT rv_redis = REDIS_RESULT_SUCCESS;
     rv_redis = initialize_redis_pool(&pool, 5, "127.0.0.1", 6379, 10000, 3, logger);
     if (REDIS_RESULT_SUCCESS != rv_redis){
-       logger(REDIS_LOG_LEVEL_DEBUG, "Failed to create redis connetion pool."); 
+        logger(REDIS_LOG_LEVEL_DEBUG, "Failed to create redis connetion pool."); 
     }
 
-    /*
     log_pool(pool);
     redisReply* reply;
-    rv_redis = do_redis_command(pool, &reply, "set helloworld %d", 1);
+    rv_redis = do_redis_command(pool, &reply, "set helloworld %d", 65535);
     if (REDIS_RESULT_SUCCESS != rv_redis){
-       logger(REDIS_LOG_LEVEL_DEBUG, "Failed to create redis connetion pool."); 
+        logger(REDIS_LOG_LEVEL_DEBUG, "Failed to set helloworld to 1.\n"); 
+    }else{
+        freeReplyObject(reply);
+        reply = NULL;
     }
-    */
-
+    
+    rv_redis = do_redis_command(pool, &reply, "get helloworld");
+    if (REDIS_RESULT_SUCCESS != rv_redis){
+        logger(REDIS_LOG_LEVEL_DEBUG, "Failed to get value of helloworld.\n"); 
+    }else{
+        logger(REDIS_LOG_LEVEL_DEBUG, "reply->type=%d.\n", reply->type);
+        if (reply->type == REDIS_REPLY_STRING){
+            logger(REDIS_LOG_LEVEL_DEBUG, "reply->str=%s.\n", reply->str);
+        }
+        freeReplyObject(reply);
+        reply = NULL;
+    }
+    
     /*
     RedisConnCB* c1 = pop_cb(pool);
     log_pool(pool);

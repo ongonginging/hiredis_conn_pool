@@ -34,7 +34,6 @@ REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, const c
 		rv = REDIS_RESULT_ERROR_POP_CONN_FAILED;
 		return rv;
 	}
-    log_pool(pool);
 	if (NULL == cb->context){
 		bool conn_rv = conn(cb);
 		if(false == conn_rv){
