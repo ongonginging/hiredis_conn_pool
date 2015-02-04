@@ -52,9 +52,9 @@ typedef struct RedisConnCBPool{
 }RedisConnCBPool;
 
 REDIS_RESULT initialize_redis_pool(RedisConnCBPool** pool, 
-	int size, char* host, int port, int timeout, int retry_times, 
+	int size, const char* host, int port, int timeout, int retry_times, 
 	void (* logger)(REDIS_LOG_LEVEL level, const char * format, ...));
 REDIS_RESULT shutdown_redis_pool(RedisConnCBPool* pool);
-REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, char* cmd, ...);
+REDIS_RESULT do_redis_command(RedisConnCBPool* pool, redisReply** reply, const char* cmd, ...);
 
 #endif //_O2I2_REDIS_CONN_H_
