@@ -59,6 +59,7 @@ RedisConnCBPool* construct_pool(int size, const char* host, int port, int timeou
 	pool->busy_size = 0;
 	pool->idle_front = 0;
 	pool->busy_front = -1;
+	pool->timeout = timeout;
 	pool->retry_times = retry_times;
 	pool->port = port;
 	pool->logger = logger;
